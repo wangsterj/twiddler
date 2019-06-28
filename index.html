@@ -3,25 +3,90 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <div id = feed></div>
     <script>
-
+      var indexHolder;
+      var addTWEET;
+      var $body;
+      var $feed;
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+        $body = $('body');
+        $feed = $('div#feed');
+
+        var refreshButton = $('<button id = "refresh"> Refresh Feed! </button>');
+        refreshButton.prependTo($body);
 
         var index = streams.home.length - 1;
+        indexHolder = index;
         while(index >= 0){
           var tweet = streams.home[index];
           var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
+          $tweet.text(tweet.message);
+
+          var $tweetTime = $('<li class = "time"></li>');
+          $tweetTime.text(tweet.created_at);
+          $tweetTime.appendTo($tweet);
+          $tweetTime.appendTo($tweet);
+
+          var $tweetUser = $('<div class = user> </div>'); 
+          $tweetUser.text("@"+tweet.user);
+          $tweetUser.prependTo($tweet);
+          $('<span class = "popuptext" id = "myPopup"> </span>').appendTo($tweetUser);
+
+          $tweet.appendTo($feed);
+
           index -= 1;
         }
 
+        $(".time").css("font-style","italic");
+        $("div.user").css("cursor","pointer");
+        $("div.user").css("color","blue");
       });
 
+      $(document).on('click', "button#refresh", function(){
+        var currentIndex = streams.home.length - 1;
+        while (currentIndex > indexHolder ) {
+          var tweet = streams.home[indexHolder];
+          var $tweet = $('<div></div>');
+          $tweet.text(tweet.message);
+
+          var $tweetTime = $('<li class = "time"></li>');
+          $tweetTime.text(tweet.created_at);
+          $tweetTime.appendTo($tweet);
+
+          var $tweetUser = $('<div class = user> </div>'); 
+          $tweetUser.text("@"+tweet.user);
+          $('<span class = "popuptext" id = "myPopup"> </span>').appendTo($tweetUser);
+
+          $tweetUser.prependTo($tweet);
+          $tweet.prependTo($feed);
+
+          indexHolder += 1;
+        }
+
+        $(".time").css("font-style","italic");
+        $("div.user").css("cursor","pointer");
+        $("div.user").css("color","blue");
+      });
+
+      $(document).on('click', "div.user", function(){
+        var userName = $(this).text();
+        userName = $(this).text().substring(1, userName.length - 1);
+        console.log(streams.users)
+        console.log(userName)
+        var userArray = streams.users[userName];
+        var messagess = "";
+        console.log(userArray)
+        for (var i = userArray.length-1; i >= 0; i--) {
+          messagess += "\n" +userArray[i].message + "\n     "+ userArray[i].created_at;
+  // var popup = document.getElementById("myPopup");
+  // popup.classList.toggle("show");
+        }
+        alert(userName+'s tweets:' +"\n"+messagess);
+      });
     </script>
   </body>
 </html>
